@@ -12,7 +12,7 @@
  
 <body>
 
-#{form @Application.enterChat() }
+#{form @Application.enterChat(username=username,roomName=roomName) }
 
 <table class='entrance'>
 <tr>
@@ -20,12 +20,12 @@
 </tr>
 <tr>
 <td>Username:</td>
-<td><input type="text" name="user.username"/></td>
+<td><input type="text" name="username"/></td>
 </tr>
 <tr>
 <tr>
 <td>Room:</td>
-<td><input type="text" name="chatroom.roomName"/></td>
+<td><input type="text" name="roomName"/></td>
 </tr>
 <tr>
 <td colspan="2" style="text-align:center"><button>Join</button></td>

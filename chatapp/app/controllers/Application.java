@@ -7,6 +7,7 @@ import java.text.*;
 
 import javax.swing.text.DateFormatter;
 
+import models.ChatRoom;
 import models.Message;
 import models.User;
 import play.mvc.Controller;
@@ -19,14 +20,21 @@ public class Application extends Controller {
         render();
     }
     
-    public static void enterChat(String username) {
-    	User user = User.fetchUser(username);
-    	if ( user == null )
-    		user = User.createUser(username);
+    public static void enterChat(String username, String roomName) {
+    	ChatRoom room = ChatRoom.getChatRoom(roomName);
+    	if ( room == null ) {
+    		room = new ChatRoom(roomName);
+    	}
+    	if ( room.userExists(username) ){
+    		//that's bad ..
+    	}else {
+    		room.addUser(username);
+    	}
+    	Session.current().put("roomName", roomName);
     	Session.current().put("username", username);
     	Session.current().put("lastMsg", getNowAsString());
-    	Message.addNewAdminMessage("[" + username+ " entered the chat!]");
-    	render("Application/chat.html",user);
+    	room.addNewAdminMessage("[" + username+ " entered the chat!]");
+    	render("Application/chat.html",username);
     }
 
     private static String getNowAsString() {
@@ -36,15 +44,18 @@ public class Application extends Controller {
     
     public static void sendMessage(String message) {
     	User user = getCurrentUser();
-    	Message.addNewMessage(message, user);
+    	ChatRoom chatRoom = getCurrentChatRoom();
+    	chatRoom.addMessage(message, user);
     	refreshMessages();
     }
     
     public static void refreshMessages() {
+    	String lastMsg = Session.current().get("lastMsg");
+    	ChatRoom chatRoom = getCurrentChatRoom();
+    	
     	Date lastDate = new Date();
     	DateFormat formatter = new SimpleDateFormat(DATE_FORMAT);
 
-    	String lastMsg = Session.current().get("lastMsg");
     	Session.current().put("lastMsg", formatter.format(new Date()));
     	if ( lastMsg != null && !lastMsg.isEmpty() ) {
     		try {
@@ -53,7 +64,7 @@ public class Application extends Controller {
 				e.printStackTrace();
 			}
     	}
-    	String messages = Message.getMessagesByDateAsString(lastDate);
+    	String messages = chatRoom.getMessagesByDateAsString(lastDate);
     	Map<String,Object> json = new HashMap<String,Object>();
     	json.put("messages", messages);
     	renderJSON(json);
@@ -66,13 +77,20 @@ public class Application extends Controller {
     	return user;
     }
     
+    private static ChatRoom getCurrentChatRoom() {
+    	String roomName = Session.current().get("roomName");
+    	ChatRoom chatRoom = ChatRoom.getChatRoom(roomName);
+    	return chatRoom;
+    }
+    
     public static void leaveChat() {
+    	ChatRoom chatRoom = getCurrentChatRoom();
     	User currentUser = getCurrentUser();
-    	if ( currentUser == null ) {
+    	if ( currentUser == null || chatRoom == null ) {
     		return; //leaving the chat anyway so no need to render anything .. 
     	}
     	Session.current().put("username", null);
-    	Message.addNewAdminMessage("[" + currentUser + " has left the chat!]");
+    	chatRoom.addNewAdminMessage("[" + currentUser + " has left the chat!]");
     }
     
     

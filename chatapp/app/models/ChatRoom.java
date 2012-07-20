@@ -1,6 +1,7 @@
 package models;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Entity;
@@ -21,14 +22,26 @@ public class ChatRoom extends Model {
 		currentUsers = new ArrayList<User>();
 		messages = new ArrayList<Message>();
 		roomName = name;
-	}
-	
-	public void addUser(User u) {
-		currentUsers.add(u);
 		save();
 	}
 	
-	public void addMessage(Message m) {
+	public User addUser(String username) {
+		User user = User.createUser(username);
+		currentUsers.add(user);
+		save();
+		return user;
+	}
+
+	public boolean userExists(String username){
+		for (User u : currentUsers) {
+			if ( u.username.equals(username) ) 
+				return true;
+		}
+		return false;
+	}
+	
+	public void addMessage(String msg, User u) {
+		Message m = new Message(u, msg);
 		messages.add(m);
 		save();
 	}
@@ -37,6 +50,21 @@ public class ChatRoom extends Model {
 		return find("byRoomName", name).first();
 	}
 	
+	public void addNewAdminMessage(String content) { 
+		Message m = new AdminMessage(content);
+		m.save();
+	}
 	
-	
+	public String getMessagesByDateAsString(Date d) {
+		System.out.println("looking for messages before ... " + d );
+		List<Message> msgList = find("select m from Message m, ChatRoom c where m.whenSent > ? and c.id = ? and m IN elements(c.messages)",d,this.id).fetch();
+		for (Message message : msgList) {
+			System.out.println(message.whenSent);
+		}
+		StringBuilder builder = new StringBuilder();
+		for (Message message : msgList) {
+			builder.append(message);
+		}
+		return builder.toString();
+	}
 }
