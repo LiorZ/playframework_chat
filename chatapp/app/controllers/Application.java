@@ -2,6 +2,7 @@ package controllers;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.text.*;
 
@@ -10,6 +11,8 @@ import javax.swing.text.DateFormatter;
 import models.ChatRoom;
 import models.Message;
 import models.User;
+import play.data.validation.Required;
+import play.db.jpa.JPABase;
 import play.mvc.Controller;
 import play.mvc.Scope.Session;
 
@@ -17,10 +20,15 @@ public class Application extends Controller {
 	private static String DATE_FORMAT = "yyyy.MM.dd.HH.mm.ss.SSS";
 	
     public static void index() {
-        render();
+    	List<JPABase> rooms = ChatRoom.findAll();
+        render("Application/index.html",rooms);
     }
     
-    public static void enterChat(String username, String roomName) {
+    public static void enterChat(@Required String username, @Required String roomName) {
+    	if ( validation.hasErrors() ) { 
+    		//put something relevant here ..
+    		index();
+    	}
     	ChatRoom room = ChatRoom.getChatRoom(roomName);
     	if ( room == null ) {
     		room = new ChatRoom(roomName);
@@ -34,7 +42,7 @@ public class Application extends Controller {
     	Session.current().put("username", username);
     	Session.current().put("lastMsg", getNowAsString());
     	room.addNewAdminMessage("[" + username+ " entered the chat!]");
-    	render("Application/chat.html",username);
+    	render("Application/chat.html",username,roomName);
     }
 
     private static String getNowAsString() {

@@ -9,7 +9,18 @@
 		border: 2px dashed black;
 	}
 </style>
+ <script type="text/javascript">
  
+ $(document).ready(function() {
+	 $("form").submit(function() {
+		if ( $('#presetRoom').val() != '' && $('#presetRoom').val() != null  ) {
+			$('#manualRoom').val($('#presetRoom').val());
+		} 
+	 });
+	 
+ });
+ 
+ </script>
 <body>
 
 #{form @Application.enterChat(username=username,roomName=roomName) }
@@ -24,11 +35,20 @@
 </tr>
 <tr>
 <tr>
-<td>Room:</td>
-<td><input type="text" name="roomName"/></td>
+<td colspan=2>
+<select name='roomNameList' id='presetRoom' style="width:80%; display:block; margin-left:auto; margin-right:auto;">
+#{list items:rooms, as:'room'}
+		<option value=${room.roomName}>${room.roomName}</option>
+#{/list}
+</select>
+</td>
 </tr>
 <tr>
-<td colspan="2" style="text-align:center"><button>Join</button></td>
+<td>New Room:</td>
+<td><input type=text name='roomName' id='manualRoom'/></td>
+</tr>
+<tr>
+<td colspan="2" style="text-align:center"><input type="submit" value="Join"></td>
 </tr>
 </table>
 #{/form}
