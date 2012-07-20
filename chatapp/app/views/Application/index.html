@@ -1,0 +1,30 @@
+#{extends 'main.html' /}
+#{set title:'Home' /}
+<style type="text/css">
+	table.entrance {
+		position:absolute;
+		display:block;
+		top:32%;
+		left:42%;
+		border: 2px dashed black;
+	}
+</style>
+ 
+<body>
+
+#{form @Application.enterChat() }
+
+<table class='entrance'>
+<tr>
+<td colspan=2 align=center><h2>Welcome to the chat!</h2></td>
+</tr>
+<tr>
+<td>Username:</td>
+<td><input type="text" name="user.username"/></td>
+</tr>
+<tr>
+<td colspan="2" style="text-align:center"><button>Join</button></td>
+</tr>
+</table>
+#{/form}
+</body>

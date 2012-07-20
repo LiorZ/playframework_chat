@@ -1,0 +1,68 @@
+#{extends 'main.html' /}
+#{set title:'Chat Application' /}
+   <script type="text/javascript">
+
+    $(document).ready(function() {
+    	//bind the enter handler for the text box:
+    	chattxt = $("#chattxt");
+    	chattxt.bind('keypress', 
+    	function(e){ var code = (e.keyCode ? e.keyCode : e.which);
+    	 if(code == 13) {
+			var send_msg = #{jsAction @Application.sendMessage(':message') /}
+			txt = chattxt.val();
+			if ( $.trim(txt).length > 0 ){
+				$.get(send_msg({message:txt}),interpret_data)
+			}
+			chattxt.val("");
+    	 }});
+    	
+    	$("#chatframe").center();
+    	setInterval(get_new_messages,1000);
+    });
+    jQuery.fn.center = function () {
+	    this.css("position","absolute");
+	    this.css("top", Math.max(0, (($(window).height() - this.outerHeight()) / 2) + 
+	                                                $(window).scrollTop()) + "px");
+	    this.css("left", Math.max(0, (($(window).width() - this.outerWidth()) / 2) + 
+	                                                $(window).scrollLeft()) + "px");
+	    return this;
+	}
+	$(window).unload(function() {
+		var send_msg = #{jsAction @Application.leaveChat() /}
+		$.get(send_msg(),function(data){});
+	})
+    function get_new_messages() {
+    	
+    	var send_msg = #{jsAction @Application.refreshMessages() /}
+    	$.get(send_msg(),interpret_data);
+    }
+    
+    function interpret_data(data) {
+		jobj=eval(data);
+		appendMessages(jobj);
+    }
+    function appendMessages(txt) {
+    	var val = $("#chat_txt_area").val();
+    	if ( val==null ){
+    		val="";
+    	}
+    	$("#chat_txt_area").val(val+txt.messages);
+    }
+    
+    </script>
+    
+    <style type="text/css">
+		  textarea.chatwindow {
+		  	width: 1000px;
+		  	height:600px;
+		  	border: 1px solid black;
+		  }
+	</style>
+    <body>
+    <div id="chatframe">
+    <h3>Logged in as ${user.username} </h3>
+    <div><textarea class='chatwindow' id='chat_txt_area'></textarea></div> 
+    <div><span style="display:inline-block; width:1000px"><input style="width:100%" type="text" id='chattxt'></span>
+    </div>
+    </div>
+    </body>
