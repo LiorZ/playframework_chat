@@ -31,6 +31,10 @@ public class ChatRoom extends Model {
 		save();
 		return user;
 	}
+	
+	public List<User> getActiveUsers() {
+		return currentUsers;
+	}
 
 	public boolean userExists(String username){
 		for (User u : currentUsers) {

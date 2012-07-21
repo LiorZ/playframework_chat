@@ -47,6 +47,20 @@
     		val="";
     	}
     	$("#chat_txt_area").val(val+txt.messages);
+		var people= txt.users;
+		var slct_box = $("#peopleInRoom");
+		var selected_option = slct_box.find("option").filter(":selected").val();
+		if ( typeof selected_option == 'string' ) {
+			selected_option = [ selected_option ];
+		}
+		slct_box.find("option").remove();
+		for (i=0; i<people.length; i++) {
+			
+			slct_box.append( '<option value="' + people[i].username +'" >'+people[i].username + '</option>' )
+			if (selected_option != null && selected_option.length >0 && jQuery.inArray(people[i].username,selected_option) != -1){ 
+				slct_box.find('option').last().attr('selected','selected');
+			}
+		}
     }
     
     </script>
@@ -57,14 +71,23 @@
 		  	height:600px;
 		  	border: 1px solid black;
 		  }
+		  .peopleInRoom {
+		  	height:612px;
+		  	width:200px;
+		  	border: 1px solid black;
+		  }
 	</style>
     <body>
     <div id="chatframe">
     
     <h2>Welcome to ${roomName}</h2>
     <h3>Logged in as ${username} </h3>
-    <div><textarea class='chatwindow' id='chat_txt_area'></textarea></div> 
-    <div><span style="display:inline-block; width:1000px"><input style="width:100%" type="text" id='chattxt'></span>
+    <div><div>
+    <select name="peopleInRoom" multiple=multiple class='peopleInRoom' id="peopleInRoom">
+    </select>
+    <textarea class='chatwindow' id='chat_txt_area'></textarea>
+    </div> 
+    <div><span style="display:inline-block; width:1000px; margin-left:205px;"><input style="width:100%" type="text" id='chattxt'></span>
     </div>
     </div>
     </body>

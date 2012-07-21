@@ -60,7 +60,8 @@ public class Application extends Controller {
     public static void refreshMessages() {
     	String lastMsg = Session.current().get("lastMsg");
     	ChatRoom chatRoom = getCurrentChatRoom();
-    	
+    	if ( chatRoom == null )
+    		return; //do something here ...
     	Date lastDate = new Date();
     	DateFormat formatter = new SimpleDateFormat(DATE_FORMAT);
 
@@ -73,8 +74,10 @@ public class Application extends Controller {
 			}
     	}
     	String messages = chatRoom.getMessagesByDateAsString(lastDate);
+    	List<User> activeUsers = chatRoom.getActiveUsers();
     	Map<String,Object> json = new HashMap<String,Object>();
     	json.put("messages", messages);
+    	json.put("users", activeUsers);
     	renderJSON(json);
     }
     
