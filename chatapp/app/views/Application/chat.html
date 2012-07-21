@@ -27,10 +27,11 @@
 	                                                $(window).scrollLeft()) + "px");
 	    return this;
 	}
-	$(window).unload(function() {
+    
+    $(window).bind('beforeunload', function() {
 		var send_msg = #{jsAction @Application.leaveChat() /}
 		$.get(send_msg(),function(data){});
-	})
+    }); 
     function get_new_messages() {
     	
     	var send_msg = #{jsAction @Application.refreshMessages() /}
