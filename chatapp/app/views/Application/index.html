@@ -8,6 +8,9 @@
 		left:42%;
 		border: 2px dashed black;
 	}
+	.error { 
+		color: red;
+	}
 </style>
  <script type="text/javascript">
  
@@ -19,13 +22,18 @@
 	 });
 	 
  });
- 
+
  </script>
 <body>
 
 #{form @Application.enterChat(username=username,roomName=roomName) }
 
 <table class='entrance'>
+#{ifErrors}
+        <td colspan=2 align=center>
+            <span class="error">All fields are required!</span>
+        </tr>
+#{/ifErrors}
 <tr>
 <td colspan=2 align=center><h2>Welcome to the chat!</h2></td>
 </tr>

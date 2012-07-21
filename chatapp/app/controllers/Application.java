@@ -27,7 +27,8 @@ public class Application extends Controller {
     public static void enterChat(@Required String username, @Required String roomName) {
     	if ( validation.hasErrors() ) { 
     		//put something relevant here ..
-    		index();
+    		List<JPABase> rooms = ChatRoom.findAll();
+            render("Application/index.html",rooms);
     	}
     	ChatRoom room = ChatRoom.getChatRoom(roomName);
     	if ( room == null ) {
@@ -80,7 +81,6 @@ public class Application extends Controller {
     	json.put("users", activeUsers);
     	renderJSON(json);
     }
-    
     
     private static User getCurrentUser() {
     	String username = Session.current().get("username");
